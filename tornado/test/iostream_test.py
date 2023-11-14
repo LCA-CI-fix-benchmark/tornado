@@ -1210,7 +1210,7 @@ class TestIOStreamCheckHostname(AsyncTestCase):
                     )
             # The server logs a warning while cleaning up the failed connection.
             # Unfortunately there's no good hook to wait for this logging.
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(1 if platform.system() == "Windows" else 0.1)
 
     @gen_test
     async def test_check_disabled(self):
