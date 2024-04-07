@@ -1194,13 +1194,13 @@ class TestIOStreamCheckHostname(AsyncTestCase):
         )
         stream.close()
 
-    @gen_test
-    async def test_no_match(self):
-        stream = SSLIOStream(socket.socket(), ssl_options=self.client_ssl_ctx)
-        with ExpectLog(gen_log, ".*alert bad certificate", level=logging.WARNING):
-            with self.assertRaises(ssl.SSLCertVerificationError):
-                with ExpectLog(
-                    gen_log,
+@gen_test
+async def test_no_match(self):
+    stream = SSLIOStream(socket.socket(), ssl_options=self.client_ssl_ctx)
+    with ExpectLog(gen_log, ".*alert bad certificate", level=logging.WARNING):
+        with self.assertRaises(ssl.SSLCertVerificationError):
+            with ExpectLog(
+                gen_log,
                     ".*(certificate verify failed: Hostname mismatch)",
                     level=logging.WARNING,
                 ):
