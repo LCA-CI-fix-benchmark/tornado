@@ -1,10 +1,76 @@
 from tornado.concurrent import Future
 from tornado import gen
 from tornado import netutil
-from tornado.ioloop import IOLoop
-from tornado.iostream import (
-    IOStream,
-    SSLIOStream,
+from tornadoimport typing
+
+from tornado import gen
+from tornado.iostream import StreamClosedError, WaitIterator
+from tornado.httputil import HTTPHeaders
+
+class TestIOStream(object):
+
+    @gen_test
+    async def test_write_while_connecting(self: typing.Any):
+        stream = self._make_client_iostream()
+        connect_fut = stream.connect(("127.0.0.1", self.get_http_port()))
+        write_fut = stream.write(b"GET / HTTP/1.0\r\nConnection: close\r\n\r\n")
+        
+        self.assertFalse(connect_fut.done())
+
+        it = WaitIterator(connect_fut, write_fut)
+        resolved_order = []
+        while not it.done():
+            try:
+                await it.next()
+                resolved_order.append(it.current_future)
+            except Exception as e:
+                print(f"An error occurred: {e}")
+        self.assertEqual(resolved_order, [connect_fut, write_fut])
+
+        data = await stream.read_until_close()
+        self.assertTrue(data.endswith(b"Hello"))
+
+        stream.close()
+
+    @gen_test
+    async def test_future_interface(self: typing.Any):
+        stream = self._make_client_iostream()
+        connect_result = await stream.connect(("127.0.0.1", self.get_http_port()))
+        self.assertIs(connect_result, stream)
+        await stream.write(b"GET / HTTP/1.0\r\n\r\n")
+        first_line = await stream.read_until(b"\r\n")
+        self.assertEqual(first_line, b"HTTP/1.1 200 OK\r\n")
+        
+        header_data = await stream.read_until(b"\r\n\r\n")
+        headers = HTTPHeaders.parse(header_data.decode("latin1"))
+        content_length = int(headers["Content-Length"])
+        body = await stream.read_bytes(content_length)
+        self.assertEqual(body, b"Hello")
+        stream.close()
+
+    @gen_test
+    async def test_future_close_while_reading(self: typing.Any):
+        stream = self._make_client_iostream()
+        await stream.connect(("127.0.0.1", self.get_http_port()))
+        await stream.write(b"GET / HTTP/1.0\r\n\r\n")
+        try:
+            await stream.read_bytes(1024 * 1024)
+        except StreamClosedError as e:
+            print(f"StreamClosedError: {e}")
+        stream.close()
+
+    @gen_test
+    async def test_future_read_until_close(self: typing.Any):
+        stream = self._make_client_iostream()
+        await stream.connect(("127.0.0.1", self.get_http_port()))
+        await stream.write(b"GET / HTTP/1.0\r\nConnection: close\r\n\r\n")
+        await stream.read_until(b"\r\n\r\n")
+        body = await stream.read_until_close()
+        self.assertEqual(body, b"Hello")
+
+        with self.assertRaises(StreamClosedError):
+            await stream.read_bytes(1)
+   SSLIOStream,
     PipeIOStream,
     StreamClosedError,
     _StreamBuffer,

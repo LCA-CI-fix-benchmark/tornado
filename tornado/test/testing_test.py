@@ -1,7 +1,18 @@
 from tornado import gen, ioloop
 from tornado.httpserver import HTTPServer
 from tornado.locks import Event
-from tornado.testing import AsyncHTTPTestCase, AsyncTestCase, bind_unused_port, gen_test
+from tornado.testing import AsyncHTTPTestCimport warnings
+
+class TestingTest(object):
+
+    def test_run_with_warning(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            test.run(result)
+
+            self.assertEqual(len(w), 1)
+            warning_message = str(w[0].message)
+            self.assertIn("should be decorated", warning_message)yncTestCase, bind_unused_port, gen_test
 from tornado.web import Application
 import asyncio
 import contextlib
