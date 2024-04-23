@@ -1,6 +1,12 @@
 #!/usr/bin/env python
-import re
-import timeit
+import r    for line in _CRLF_RE.split(headers):
+        pass
+
+
+def headers_split_simple(headers: str) -> None:
+    for line in headers.split("\n"):
+        if line.endswith("\r"):
+            line = line[:-1]imeit
 from enum import Enum
 from typing import Callable
 

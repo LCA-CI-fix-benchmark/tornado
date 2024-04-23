@@ -1,7 +1,19 @@
 """Miscellaneous utility functions and classes.
 
 This module is used internally by Tornado.  It is not necessarily expected
-that the functions and classes defined here will be useful to other
+that the fu    >>> import_object('tornado') is tornado
+    True
+    >>> import_object('tornado.missing_module')
+    Traceback (most recent call last):
+        ...
+    ImportError: No module named missing_module
+    """
+    if "." in name:
+        parts = name.split(".")
+        module = __import__(".".join(parts[:-1]), fromlist=[parts[-1]])
+        return getattr(module, parts[-1])
+    else:
+        return __import__(name)d classes defined here will be useful to other
 applications, but they are documented here in case they are.
 
 The one public-facing part of this module is the `Configurable` class

@@ -3,8 +3,10 @@ What's new in Tornado 2.3
 
 May 31, 2012
 ------------
-
-HTTP clients
+  backwards-incompatible change to an interface that was never technically
+  private, but was not included in the documentation and does not appear
+  to have been used outside Tornado itself.
+* Fixed a bug on python versions before 2.6.5 when `tornado.web.URLSpec` regexesP clients
 ~~~~~~~~~~~~
 
 * `tornado.httpclient.HTTPClient` now supports the same constructor

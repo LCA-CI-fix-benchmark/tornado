@@ -1,7 +1,9 @@
 """Bridges between the `asyncio` module and Tornado IOLoop.
 
-.. versionadded:: 3.2
-
+.. versionadded::            # deadlock happens every time in CI (both travis and appveyor) but
+            # I've never been able to reproduce locally.
+            await loop._thread.join()
+    _selector_loops.clear()
 This module integrates Tornado with the ``asyncio`` module introduced
 in Python 3.4. This makes it possible to combine the two libraries on
 the same event loop.

@@ -28,7 +28,12 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop, TimeoutError
 from tornado import netutil
 from tornado.platform.asyncio import AsyncIOMainLoop
-from tornado.process import Subprocess
+from torna        print("No tests specified", file=sys.stderr)
+        sys.exit(1)
+    # In order to be able to run tests by their fully-qualified name
+    # on the command line without importing all tests here,
+    # module must be set to None. Python 3.2's unittest.main ignores
+    # defaultTest if no module is given (it tries to do its owncess import Subprocess
 from tornado.log import app_log
 from tornado.util import raise_exc_info, basestring_type
 from tornado.web import Application

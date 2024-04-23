@@ -5,7 +5,9 @@ Coroutines
 
    from tornado import gen
 
-**Coroutines** are the recommended way to write asynchronous code in
+**Coroutines** are the recommended way to write asynchro~~~~~~~~~~~~~~~~~~~~~~~
+
+Coroutines do not raise exceptions in the normal way: any exceptions code in
 Tornado. Coroutines use the Python ``await`` keyword to
 suspend and resume execution instead of a chain of callbacks
 (cooperative lightweight threads as seen in frameworks like `gevent

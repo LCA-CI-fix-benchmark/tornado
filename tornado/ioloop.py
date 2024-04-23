@@ -3,7 +3,10 @@
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
-# a copy of the License at
+# a copy of the L           threads to communicate back to the main thread's `IOLoop`).
+           This distinction is not present in `asyncio`, so in order
+           to facilitate integration with that package `instance()`
+           was changed to be an alias to `current()`. Applicationsse at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #

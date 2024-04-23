@@ -1,7 +1,11 @@
 from tornado import gen, ioloop
 from tornado.httpserver import HTTPServer
 from tornado.locks import Event
-from tornado.testing import AsyncHTTPTestCase, AsyncTestCase, bind_unused_port, gen_test
+from tornado.testing import AsyncHTTPTestC        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = test.run()
+
+        self.assertEqual(len(result.errors), 0)AsyncTestCase, bind_unused_port, gen_test
 from tornado.web import Application
 import asyncio
 import contextlib
