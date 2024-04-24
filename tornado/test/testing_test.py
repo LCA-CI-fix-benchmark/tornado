@@ -1,7 +1,34 @@
 from tornado import gen, ioloop
 from tornado.httpserver import HTTPServer
 from tornado.locks import Event
-from tornado.testing import AsyncHTTPTestCase, AsyncTestCase, bind_unused_port, gen_test
+from tornado.testing import AsyncHTTPTe        result = unittest.TestResult()
+
+        # Silence "RuntimeWarning: coroutine 'test_coro' was never awaited".
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            test.run(result)
+
+        self.assertEqual(len(result.errors), 1)
+        self.assertIn("should be decorated", result.errors[0][1])
+
+    @gen_test
+    async def test_undecorated_generator_with_skip(self):
+        class Test(AsyncTestCase):
+            @unittest.skip("don't run this")
+            async def test_gen(self):
+                await gen.sleep(0)  # Placeholder async operation
+
+        test = Test("test_gen")
+        result = unittest.TestResult()
+        test.run(result)
+        self.assertEqual(len(result.errors), 0)
+        self.assertEqual(len(result.skipped), 1)
+
+    @gen_test
+    async def test_other_return(self):
+        class Test(AsyncTestCase):
+            async def test_other_return(self):
+                return 42d_unused_port, gen_test
 from tornado.web import Application
 import asyncio
 import contextlib

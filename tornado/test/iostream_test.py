@@ -41,10 +41,23 @@ import socket
 import ssl
 import typing
 from unittest import mock
-import unittest
+import uni        self.client_stream = yield client_future
+        self.server_stream = yield server_future
+        self.assertTrue(isinstance(self.client_stream, SSLIOStream))
+        self.assertTrue(isinstance(self.server_stream, SSLIOStream))
+        yield self.client_send_line(b"EHLO mail.example.com\r\n")
+        yield self.server_send_line(b"250 mail.example.com welcome\r\n")
 
-
-def _server_ssl_options():
+    @gen_test
+    async def test_handshake_fail(self):
+        server_future = self.server_start_tls(_server_ssl_options())
+        # Certificates are verified with the default configuration.
+        with ExpectLog(gen_log, "SSL Error"):
+            client_future = self.client_start_tls(server_hostname="localhost")
+            with self.assertRaises(ssl.SSLError):
+                await client_future
+            with self.assertRaises((ssl.SSLError, socket.error)):
+                await server_futurer_ssl_options():
     return dict(
         certfile=os.path.join(os.path.dirname(__file__), "test.crt"),
         keyfile=os.path.join(os.path.dirname(__file__), "test.key"),

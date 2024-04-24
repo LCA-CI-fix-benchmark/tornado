@@ -2,7 +2,18 @@
 # Copyright 2009 Facebook
 #
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
-# not use this file except in compliance with the License. You may obtain
+# not use this file except in compliance with the Licens        """Called by IOLoop when the requested timeout has passed."""
+        self._timeout = None
+        while True:
+            try:
+                ret, num_handles = self._multi.socket_action(pycurl.SOCKET_TIMEOUT, 0)
+            except pycurl.error as e:
+                ret = e.args[0]
+                if ret != pycurl.E_CALL_MULTI_PERFORM:
+                    break
+            else:
+                break
+        self._finish_pending_requests() obtain
 # a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0

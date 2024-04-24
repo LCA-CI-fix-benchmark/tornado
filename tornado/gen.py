@@ -4,7 +4,28 @@
 
    The "decorator and generator" approach in this module is a
    precursor to native coroutines (using ``async def`` and ``await``)
-   which were introduced in Python 3.5. Applications that do not
+   which were introduced                 # Inline the first iteration of Runner.run. This lets us
+      def __init__(self, value: Any = None) -> None:
+        super().__init__()
+        self.value = value
+        self.args = (value,)     # avoid the cost of creating a Runner when the coroutine
+                # never actually yields, which in turn allows us to
+                # use "optional" coroutines in critical path code without
+                # performance penalty for the synchronous case.
+                try:
+                    yielded = ctx_run(next, result)
+                except StopIteration as e:
+                    future_set_result_unless_cancelled(
+                        future, _value_from_stopiteration(e)
+                    )
+                except Return as e:
+                    future_set_result_unless_cancelled(
+                        future, _value_from_stopiteration(e)
+                    )
+                except Exception:
+                    future_set_exc_info(future, sys.exc_info())
+                else:
+                    # Provide strong references to Runner objects as longApplications that do not
    require compatibility with older versions of Python should use
    native coroutines instead. Some parts of this module are still
    useful with native coroutines, notably `multi`, `sleep`,

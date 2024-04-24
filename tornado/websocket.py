@@ -56,7 +56,44 @@ if TYPE_CHECKING:
     # The zlib compressor types aren't actually exposed anywhere
     # publicly, so declare protocols for the portions we use.
     class _Compressor(Protocol):
-        def compress(self, data: bytes) -> bytes:
+        def compress(self, data: byt    url: Union[str, httpclient.HTTPRequest],
+    callba       Added the ``resolver`` argument.
+    """
+    if isinstance(url, httpclient.HTTPRequest):
+        assert connect_timeout is None
+        request = url
+        # Copy and convert the headers dict/object (see comments in
+        # AsyncHTTPClient.fetch)
+        request.headers = httputil.HTTPHeaders(request.headers)
+    else:
+        request = httpclient.HTTPRequest(url, connect_timeout=connect_timeout)
+    request = cast(
+        httpclient.HTTPRequest,
+        httpclient._RequestProxy(request, httpclient.HTTPRequest._DEFAULTS),
+    )
+    conn = WebSocketClientConnection(
+        request,
+        on_message_callback=on_message_callback,
+        compression_options=compression_options,
+        ping_interval=ping_interval,
+        ping_timeout=ping_timeout,
+        max_message_size=max_message_size,
+        subprotocols=subprotocols,
+        resolver=resolver,
+    )
+    if callback is not None:
+        IOLoop.current().add_future(conn.connect_future, callback)
+    return conn.connect_futureure[WebSocketClientConnection]"], None]] = None,
+    connect_timeout: Optional[float] = None,
+    on_message_callback: Optional[Callable[[Union[None, str, bytes]], None]] = None,
+    compression_options: Optional[Dict[str, Any]] = None,
+    ping_interval: Optional[float] = None,
+    ping_timeout: Optional[float] = None,
+    max_message_size: int = _default_max_message_size,
+    subprotocols: Optional[List[str]] = None,
+    resolver: Optional[Resolver] = None,
+) -> "Awaitable[WebSocketClientConnection]":
+    """Client-side websocket support.:
             pass
 
         def flush(self, mode: int) -> bytes:

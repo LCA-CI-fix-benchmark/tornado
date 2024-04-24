@@ -8,7 +8,22 @@
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# distributed un        future = self._start_read()
+        self._read_regex = re.compile(regex)
+        self._read_max_bytes = max_bytes
+        try:
+            self._try_inline_read()
+        except UnsatisfiableReadError as e:
+            # Handle this the same way as in _handle_events.
+            gen_log.info("Unsatisfiable read, closing connection: %s" % e)
+            self.close(exc_info=e)
+            return future
+        except Exception:
+            # Ensure that the future doesn't log an error because its
+            # failure was never examined.
+            future.add_done_callback(lambda f: f.exception())
+            raise
+        return futuredistributed on an "AS IS" BASIS, WITHOUT
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.

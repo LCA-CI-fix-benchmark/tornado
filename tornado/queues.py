@@ -1,6 +1,35 @@
-# Copyright 2015 The Tornado Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# Copyright 2015 Th"""
+
+Unlike the standard library's `queue` module, the classes defined here
+are *not* thread-safe. To use these queues from another thread,
+use `.IOLoop.add_callback` to transfer control to the `.IOLoop` thread
+before calling any queue methods.
+
+"""
+
+import collections
+import datetime
+import heapq
+
+from tornado import gen, ioloop
+from tornado.concurrent import Future, future_set_result_unless_cancelled
+from tornado.locks import Event
+
+from typing import Union, TypeVar, Generic, Awaitable, Optional, Deque, Tuple, Any
+
+_T = TypeVar("_T")
+
+__all__ = ["Queue", "PriorityQueue", "LifoQueue", "QueueFull", "QueueEmpty"]
+
+
+class QueueEmpty(Exception):
+    """Raised by `.Queue.get_nowait` when the queue has no items."""
+    pass
+
+
+class QueueFull(Exception):
+    """Raised by `.Queue.put_nowait` when a queue is at its maximum size."""
+    passthe Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
 # a copy of the License at
 #

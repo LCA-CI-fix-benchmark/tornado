@@ -40,9 +40,53 @@ class GenBasicTest(AsyncTestCase):
         yield gen.moment
         return result
 
-    @gen.coroutine
-    def async_exception(self, e):
-        yield gen.moment
+    @gen.co        loop.run_sync(do_something)
+        loop.close()
+        gc.collect()
+        # Future was collected
+        self.assertIs(wfut[0](), None)
+        # At least one wakeup
+        self.assertGreaterEqual(len(result), 2)
+        if not self.is_pypy3():
+            # coroutine finalizer was called (not on PyPy3 apparently)
+            self.assertIs(result[-1], None)
+
+    @gen_test
+    async def test_gc_infinite_async_await(self):
+        # Same as test_gc_infinite_coro, but with a `async def` function
+        import asyncio
+
+        async def infinite_coro(result):
+            try:
+                while True:
+                    await gen.sleep(1e-3)
+                    result.append(True)
+            finally:
+                # coroutine finalizer
+                result.append(None)
+
+        loop = self.get_new_ioloop()
+        result = []  # type: List[Optional[bool]]
+        wfut = []
+
+        @gen.coroutine
+        def do_something():
+            fut = asyncio.get_event_loop().create_task(infinite_coro(result))
+            fut._refcycle = fut  # type: ignore
+            wfut.append(weakref.ref(fut))
+            yield gen.sleep(0.2)
+
+        loop.run_sync(do_something)
+        with ExpectLog("asyncio", "Task was destroyed but it is pending"):
+            loop.close()
+            gc.collect()
+        # Future was collected
+        self.assertIs(wfut[0](), None)
+        # At least one wakeup and one finally
+        self.assertGreaterEqual(len(result), 2)
+        if not self.is_pypy3():
+            # coroutine finalizer was called (not on PyPy3 apparently)
+            self.assertIs(result[-1], None)eld gen.moment
         raise e
 
     @gen.coroutine

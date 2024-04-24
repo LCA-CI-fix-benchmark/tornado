@@ -3,8 +3,30 @@
 # a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
+    @gen_test
+    async def test_put_timeout(self):
+        q = queues.Queue(1)  # type: queues.Queue[int]
+        await q.put(0)  # Now it's full.
+        put_timeout = q.put(1, timeout=timedelta(seconds=0.01))
+        put = q.put(2)
+        with self.assertRaises(TimeoutError):
+            await put_timeout
+
+        self.assertEqual(0, await q.get())
+        # 1 was never put in the queue.
+        self.assertEqual(2, await q.get())
+
+        # Final get() unblocked this putter.
+        await put
+
+    @gen_test
+    async def test_put_timeout_preempted(self):
+        q = queues.Queue(1)  # type: queues.Queue[int]
+        await q.put(0)
+        put = q.put(1, timeout=timedelta(seconds=0.01))
+        await q.get()
+        await gen.sleep(0.02)
+        await put  # No TimeoutError.applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
