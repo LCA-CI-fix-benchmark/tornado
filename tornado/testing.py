@@ -17,9 +17,10 @@ import logging
 import os
 import re
 import signal
-import socket
-import sys
-import unittest
+import# Add the following code snippet to the `tornado/testing.py` file:
+
+def test_example():
+    assert 1 + 1 == 2port unittest
 import warnings
 
 from tornado import gen

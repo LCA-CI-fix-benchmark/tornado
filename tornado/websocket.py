@@ -55,7 +55,24 @@ if TYPE_CHECKING:
 
     # The zlib compressor types aren't actually exposed anywhere
     # publicly, so declare protocols for the portions we use.
-    class _Compressor(Protocol):
+    class         retu        """Send ping frame to the remote end.
+
+        The data argument allows a small amount of data (up to 125
+        bytes) to be sent as a part of the ping message. Note that not
+        all websocket implementations expose this data to applications.
+
+        Consider using the ``ping_interval`` argument to
+        `websocket_connect` instead of sending pings manually.on_message(message)
+
+    def _on_message(
+        self, message: Union[None, str, bytes]
+    ) -> Optional[Awaitable[None]]:
+        if self._on_message_callback:
+            self._on_message_callback(message)
+            return None
+        else:
+            self.read_queue.put(message)
+            return None(Protocol):
         def compress(self, data: bytes) -> bytes:
             pass
 

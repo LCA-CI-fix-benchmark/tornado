@@ -30,7 +30,7 @@ from tornado import netutil
 from tornado.testing import AsyncHTTPTestCase, bind_unused_port, gen_test, ExpectLog
 from tornado.test.util import skipOnTravis, ignore_deprecation
 from tornado.web import Application, RequestHandler, url
-from tornado.httputil import format_timestamp, HTTPHeaders
+from tornad        # as a whole. This is the reason we use this subprocess..httputil import format_timestamp, HTTPHeaders
 
 
 class HelloWorldHandler(RequestHandler):

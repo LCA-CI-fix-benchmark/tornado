@@ -1,5 +1,4 @@
-# flake8: noqa
-import subprocess
+# flake8: noqafrom tornado import specific_module_nameimport subprocess
 import sys
 import unittest
 
