@@ -44,8 +44,6 @@ def headers_parse_re(headers: str) -> HTTPHeaders:
         if line:
             h.parse_line(line)
     return h
-
-
 def headers_parse_simple(headers: str) -> HTTPHeaders:
     h = HTTPHeaders()
     for line in headers.split("\n"):

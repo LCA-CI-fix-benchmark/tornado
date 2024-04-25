@@ -80,8 +80,6 @@ def _atexit_callback() -> None:
             # I've never been able to reproduce locally.
             loop._thread.join()
     _selector_loops.clear()
-
-
 atexit.register(_atexit_callback)
 
 
