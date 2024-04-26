@@ -319,7 +319,7 @@ def main() -> None:
         # Just to make sure we've covered everything, walk the stack trace
         # from the exception and watch every file.
         for filename, lineno, name, line in traceback.extract_tb(sys.exc_info()[2]):
-            watch(filename)
+            await watch(filename)
         if isinstance(e, SyntaxError):
             # SyntaxErrors are special:  their innermost stack frame is fake
             # so extract_tb won't see it and we have to get the filename

@@ -538,21 +538,10 @@ class Lock(object):
         return self._block.acquire(timeout)
 
     def release(self) -> None:
-        """Unlock.
-
-        The first coroutine in line waiting for `acquire` gets the lock.
-
-        If not locked, raise a `RuntimeError`.
-        """
         try:
-            self._block.release()
+            await self._block.release()
         except ValueError:
             raise RuntimeError("release unlocked lock")
-
-    def __enter__(self) -> None:
-        raise RuntimeError("Use `async with` instead of `with` for Lock")
-
-    def __exit__(
         self,
         typ: "Optional[Type[BaseException]]",
         value: Optional[BaseException],

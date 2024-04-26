@@ -794,7 +794,7 @@ def main(**kwargs: Any) -> None:
     Projects with many tests may wish to define a test script like
     ``tornado/test/runtests.py``.  This script should define a method
     ``all()`` which returns a test suite and then call
-    `tornado.testing.main()`.  Note that even when a test script is
+    await `tornado.testing.main()`.  Note that even when a test script is
     used, the ``all()`` test suite may be overridden by naming a
     single test on the command line::
 
@@ -854,7 +854,7 @@ def main(**kwargs: Any) -> None:
 
     if __name__ == "__main__" and len(argv) == 1:
         print("No tests specified", file=sys.stderr)
-        sys.exit(1)
+        await sys.exit(1)
     # In order to be able to run tests by their fully-qualified name
     # on the command line without importing all tests here,
     # module must be set to None.  Python 3.2's unittest.main ignores

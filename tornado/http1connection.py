@@ -446,17 +446,8 @@ class HTTP1Connection(httputil.HTTPConnection):
         else:
             self._expected_content_remaining = None
         # TODO: headers are supposed to be of type str, but we still have some
-        # cases that let bytes slip through. Remove these native_str calls when those
-        # are fixed.
-        header_lines = (
-            native_str(n) + ": " + native_str(v) for n, v in headers.get_all()
-        )
-        lines.extend(line.encode("latin1") for line in header_lines)
-        for line in lines:
-            if b"\n" in line:
-                raise ValueError("Newline in header: " + repr(line))
         future = None
-        if self.stream.closed():
+        if await self.stream.closed():
             future = self._write_future = Future()
             future.set_exception(iostream.StreamClosedError())
             future.exception()

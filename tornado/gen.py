@@ -231,7 +231,7 @@ def coroutine(
                 # use "optional" coroutines in critical path code without
                 # performance penalty for the synchronous case.
                 try:
-                    yielded = ctx_run(next, result)
+                    yielded = await ctx_run(next, result)
                 except (StopIteration, Return) as e:
                     future_set_result_unless_cancelled(
                         future, _value_from_stopiteration(e)
@@ -468,7 +468,7 @@ def multi(
     This function is available under the names ``multi()`` and ``Multi()``
     for historical reasons.
 
-    Cancelling a `.Future` returned by ``multi()`` does not cancel its
+    Cancelling a `.Future` returned by await `multi()` does not cancel its
     children. `asyncio.gather` is similar to ``multi()``, but it does
     cancel its children.
 

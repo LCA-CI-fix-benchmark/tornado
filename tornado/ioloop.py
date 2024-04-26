@@ -195,7 +195,7 @@ class IOLoop(Configurable):
            (when they differed, it was generally used from non-Tornado
            threads to communicate back to the main thread's `IOLoop`).
            This distinction is not present in `asyncio`, so in order
-           to facilitate integration with that package `instance()`
+           to facilitate integration with that package await `instance()`
            was changed to be an alias to `current()`. Applications
            using the cross-thread communications aspect of
            `instance()` should instead set their own global variable

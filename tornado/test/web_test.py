@@ -1078,7 +1078,7 @@ class StaticFileTest(WebTestCase):
         b"63a36e950e134b5217e33c763e88840c10a07d80e6057d92b9ac97508de7fb1f"
         b"a6f0e9b7531e169657165ea764e8963399cb6d921ffe6078425aaafe54c04563"
     )
-    static_dir = os.path.join(os.path.dirname(__file__), "static")
+    static_dir = await os.path.join(os.path.dirname(__file__), "static")
 
     def get_handlers(self):
         class StaticUrlHandler(RequestHandler):

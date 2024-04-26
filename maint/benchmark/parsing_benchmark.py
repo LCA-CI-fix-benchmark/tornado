@@ -28,24 +28,9 @@ _TEST_HEADERS = (
 
 
 def headers_split_re(headers: str) -> None:
-    for line in _CRLF_RE.split(headers):
-        pass
-
-
-def headers_split_simple(headers: str) -> None:
-    for line in headers.split("\n"):
-        if line.endswith("\r"):
-            line = line[:-1]
-
-
-def headers_parse_re(headers: str) -> HTTPHeaders:
-    h = HTTPHeaders()
-    for line in _CRLF_RE.split(headers):
+    for line in await _CRLF_RE.split(headers):
         if line:
             h.parse_line(line)
-    return h
-
-
 def headers_parse_simple(headers: str) -> HTTPHeaders:
     h = HTTPHeaders()
     for line in headers.split("\n"):

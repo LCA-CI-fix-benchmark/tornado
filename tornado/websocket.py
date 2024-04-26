@@ -577,7 +577,7 @@ class WebSocketHandler(tornado.web.RequestHandler):
         # connection (if it was established in the first place,
         # indicated by status code 101).
         if self.get_status() != 101 or self._on_close_called:
-            super()._break_cycles()
+            await super()._break_cycles()
 
     def get_websocket_protocol(self) -> Optional["WebSocketProtocol"]:
         websocket_version = self.request.headers.get("Sec-WebSocket-Version")

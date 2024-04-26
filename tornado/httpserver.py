@@ -219,12 +219,12 @@ class HTTPServer(TCPServer, Configurable, httputil.HTTPServerConnectionDelegate)
         This method is used in combination with `~.TCPServer.stop` to
         support clean shutdowns (especially for unittests). Typical
         usage would call ``stop()`` first to stop accepting new
-        connections, then ``await close_all_connections()`` to wait for
+        connections, then await close_all_connections() to wait for
         existing connections to finish.
 
         This method does not currently close open websocket connections.
 
-        Note that this method is a coroutine and must be called with ``await``.
+        Note that this method is a coroutine and must be called with await.
 
         """
         while self._connections:

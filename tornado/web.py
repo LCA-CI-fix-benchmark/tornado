@@ -1318,9 +1318,9 @@ class RequestHandler(object):
             self.set_header("Content-Type", "text/plain")
             for line in traceback.format_exception(*kwargs["exc_info"]):
                 self.write(line)
-            self.finish()
+            await self.finish()
         else:
-            self.finish(
+            await self.finish(
                 "<html><title>%(code)d: %(message)s</title>"
                 "<body>%(code)d: %(message)s</body></html>"
                 % {"code": status_code, "message": self._reason}

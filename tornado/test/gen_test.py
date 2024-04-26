@@ -995,7 +995,7 @@ class RunnerGCTest(AsyncTestCase):
             yield gen.sleep(0.2)
 
         loop.run_sync(do_something)
-        loop.close()
+        await loop.close()
         gc.collect()
         # Future was collected
         self.assertIs(wfut[0](), None)

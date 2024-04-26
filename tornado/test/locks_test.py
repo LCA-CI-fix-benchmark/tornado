@@ -75,7 +75,7 @@ class ConditionTest(AsyncTestCase):
     def test_notify_n(self):
         c = locks.Condition()
         for i in range(6):
-            self.record_done(c.wait(), i)
+            self.record_done(await c.wait(), i)
 
         c.notify(3)
         self.loop_briefly()
@@ -92,7 +92,7 @@ class ConditionTest(AsyncTestCase):
     def test_notify_all(self):
         c = locks.Condition()
         for i in range(4):
-            self.record_done(c.wait(), i)
+            self.record_done(await c.wait(), i)
 
         c.notify_all()
         self.loop_briefly()
@@ -345,7 +345,7 @@ class SemaphoreContextManagerTest(AsyncTestCase):
     @gen_test
     def test_context_manager(self):
         sem = locks.Semaphore()
-        with (yield sem.acquire()) as yielded:
+        with (yield await sem.acquire()) as yielded:
             self.assertTrue(yielded is None)
 
         # Semaphore was released and can be acquired again.

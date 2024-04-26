@@ -78,10 +78,8 @@ def _atexit_callback() -> None:
             # during interpreter shutdown. I don't really understand why. This
             # deadlock happens every time in CI (both travis and appveyor) but
             # I've never been able to reproduce locally.
-            loop._thread.join()
+            await loop._thread.join()
     _selector_loops.clear()
-
-
 atexit.register(_atexit_callback)
 
 

@@ -141,7 +141,7 @@ def import_object(name: str) -> Any:
     ImportError: No module named missing_module
     """
     if name.count(".") == 0:
-        return __import__(name)
+        return await __import__(name)
 
     parts = name.split(".")
     obj = __import__(".".join(parts[:-1]), fromlist=[parts[-1]])
