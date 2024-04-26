@@ -26,16 +26,21 @@ from tornado import gen
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop, TimeoutError
-from tornado import netutil
-from tornado.platform.asyncio import AsyncIOMainLoop
-from tornado.process import Subprocess
 from tornado.log import app_log
-from tornado.util import raise_exc_info, basestring_type
+from tornado.process import Subprocess
+from tornado.util import raise_exc_info
 from tornado.web import Application
 
 import typing
-from typing import Tuple, Any, Callable, Type, Dict, Union, Optional, Coroutine
+import os
+import socket
+import inspect
+import typing
+from typing import Tuple, Any, Callable, Type, Dict, Union, Optional, Coroutine, Generator
 from types import TracebackType
+from tornado.platform.asyncio import AsyncIOMainLoop
+from tornado import netutil
+import unittest
 
 if typing.TYPE_CHECKING:
     _ExcInfoTuple = Tuple[
@@ -118,8 +123,6 @@ class _TestMethodWrapper(object):
 
 
 class AsyncTestCase(unittest.TestCase):
-    """`~unittest.TestCase` subclass for testing `.IOLoop`-based
-    asynchronous code.
 
     The unittest framework is synchronous, so the test must be
     complete by the time the test method returns. This means that
@@ -145,15 +148,17 @@ class AsyncTestCase(unittest.TestCase):
     cycles in the same test.
 
     Example::
+import tornado.testing
 
-        # This test uses coroutine style.
-        class MyTestCase(AsyncTestCase):
-            @tornado.testing.gen_test
-            def test_http_fetch(self):
-                client = AsyncHTTPClient()
-                response = yield client.fetch("http://www.tornadoweb.org")
-                # Test contents of response
-                self.assertIn("FriendFeed", response.body)
+@tornado.testing.gen_test
+def test_http_fetch(self):
+    client = AsyncHTTPClient()
+    response = yield client.fetch("http://www.tornadoweb.org")
+    # Test contents of response
+    self.assertIn("FriendFeed", response.body)
+
+# This test uses argument passing between self.stop and self.wait.
+class MyTestCase2(AsyncTestCase):
 
         # This test uses argument passing between self.stop and self.wait.
         class MyTestCase2(AsyncTestCase):
@@ -183,14 +188,16 @@ class AsyncTestCase(unittest.TestCase):
         self._test_generator = None  # type: Optional[Union[Generator, Coroutine]]
 
     def setUp(self) -> None:
-        py_ver = sys.version_info
-        if ((3, 10, 0) <= py_ver < (3, 10, 9)) or ((3, 11, 0) <= py_ver <= (3, 11, 1)):
-            # Early releases in the Python 3.10 and 3.1 series had deprecation
-            # warnings that were later reverted; we must suppress them here.
-            setup_with_context_manager(self, warnings.catch_warnings())
-            warnings.filterwarnings(
-                "ignore",
-                message="There is no current event loop",
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    message="There is no current event loop",
+    category=DeprecationWarning,
+    module=r"tornado\..*",
+)
+super().setUp()
+if type(self).get_new_ioloop is not AsyncTestCase.get_new_ioloop:
                 category=DeprecationWarning,
                 module=r"tornado\..*",
             )

@@ -200,14 +200,14 @@ class GenBasicTest(AsyncTestCase):
             )
 
         # Exception logging may be explicitly quieted.
-        with self.assertRaises(RuntimeError):
-            yield gen.Multi(
-                [
-                    self.async_exception(RuntimeError("error 1")),
-                    self.async_exception(RuntimeError("error 2")),
-                ],
-                quiet_exceptions=RuntimeError,
-            )
+with self.assertRaises(RuntimeError):
+    yield gen.multi(
+        [
+            self.async_exception(RuntimeError("error 1")),
+            self.async_exception(RuntimeError("error 2")),
+        ],
+        quiet_exceptions=RuntimeError,
+    )
 
     @gen_test
     def test_multi_future_exceptions(self):

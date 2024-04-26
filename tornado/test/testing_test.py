@@ -143,9 +143,14 @@ class AsyncTestCaseWrapperTest(unittest.TestCase):
                 pass
 
         test = Test("test_coro")
+import unittest
+import warnings
+
+class TestingTest(unittest.TestCase):
+    @unittest.expectedFailure
+    def test_coro(self):
         result = unittest.TestResult()
 
-        # Silence "RuntimeWarning: coroutine 'test_coro' was never awaited".
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             test.run(result)

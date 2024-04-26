@@ -116,8 +116,11 @@ class TestIOLoop(AsyncTestCase):
             sock.close()
 
     def test_remove_without_add(self):
-        # remove_handler should not throw an exception if called on an fd
-        # was never added.
+import unittest
+from tornado.testing import bind_unused_port
+
+class IOLoopTest(unittest.TestCase):
+    def test_remove_handler_exception_handling(self):
         sock, port = bind_unused_port()
         try:
             self.io_loop.remove_handler(sock.fileno())
