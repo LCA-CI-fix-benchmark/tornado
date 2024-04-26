@@ -143,6 +143,9 @@ class AsyncTestCaseWrapperTest(unittest.TestCase):
                 pass
 
         test = Test("test_coro")
+        import unittest
+        import warnings
+
         result = unittest.TestResult()
 
         # Silence "RuntimeWarning: coroutine 'test_coro' was never awaited".

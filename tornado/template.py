@@ -345,7 +345,7 @@ class Template(object):
             "linkify": escape.linkify,
             "datetime": datetime,
             "_tt_utf8": escape.utf8,  # for internal use
-            "_tt_string_types": (unicode_type, bytes),
+            "_tt_string_types": (str, bytes),
             # __name__ and __loader__ allow the traceback mechanism to find
             # the generated source code.
             "__name__": self.name.replace(".", "_"),

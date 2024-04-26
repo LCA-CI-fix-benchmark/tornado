@@ -236,7 +236,7 @@ class GenBasicTest(AsyncTestCase):
     def test_sync_raise_return(self):
         @gen.coroutine
         def f():
-            raise gen.Return()
+            return
 
         self.io_loop.run_sync(f)
 
@@ -244,14 +244,14 @@ class GenBasicTest(AsyncTestCase):
         @gen.coroutine
         def f():
             yield gen.moment
-            raise gen.Return()
+            return
 
         self.io_loop.run_sync(f)
 
     def test_sync_raise_return_value(self):
         @gen.coroutine
         def f():
-            raise gen.Return(42)
+            return 42
 
         self.assertEqual(42, self.io_loop.run_sync(f))
 
@@ -978,15 +978,16 @@ class RunnerGCTest(AsyncTestCase):
         wfut = []
 
         @gen.coroutine
+        @gen.coroutine
         def infinite_coro():
+            result = []
             try:
                 while True:
                     yield gen.sleep(1e-3)
                     result.append(True)
             finally:
                 # coroutine finalizer
-                result.append(None)
-
+                raise gen.Return(None)
         @gen.coroutine
         def do_something():
             fut = infinite_coro()

@@ -972,6 +972,7 @@ class KeepAliveTest(AsyncHTTPTestCase):
         self.close()
 
     @gen_test
+    @gen.coroutine
     def test_finish_while_closed(self):
         yield self.connect()
         self.stream.write(b"GET /finish_on_close HTTP/1.1\r\n\r\n")

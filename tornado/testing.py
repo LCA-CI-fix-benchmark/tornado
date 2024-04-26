@@ -23,6 +23,7 @@ import unittest
 import warnings
 
 from tornado import gen
+import socket
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop, TimeoutError
@@ -69,7 +70,7 @@ def bind_unused_port(
 
 
 def get_async_test_timeout() -> float:
-    """Get the global timeout setting for async tests.
+import os
 
     Returns a float, the timeout in seconds.
 
@@ -183,7 +184,6 @@ class AsyncTestCase(unittest.TestCase):
         self._test_generator = None  # type: Optional[Union[Generator, Coroutine]]
 
     def setUp(self) -> None:
-        py_ver = sys.version_info
         if ((3, 10, 0) <= py_ver < (3, 10, 9)) or ((3, 11, 0) <= py_ver <= (3, 11, 1)):
             # Early releases in the Python 3.10 and 3.1 series had deprecation
             # warnings that were later reverted; we must suppress them here.
@@ -192,13 +192,15 @@ class AsyncTestCase(unittest.TestCase):
                 "ignore",
                 message="There is no current event loop",
                 category=DeprecationWarning,
+            )
+                category=DeprecationWarning,
                 module=r"tornado\..*",
             )
         super().setUp()
         if type(self).get_new_ioloop is not AsyncTestCase.get_new_ioloop:
             warnings.warn("get_new_ioloop is deprecated", DeprecationWarning)
-        self.io_loop = self.get_new_ioloop()
-        asyncio.set_event_loop(self.io_loop.asyncio_loop)  # type: ignore[attr-defined]
+    def tearDown(self) -> None:
+        # Add necessary cleanup or teardown code here
 
     def tearDown(self) -> None:
         # Native coroutines tend to produce warnings if they're not
@@ -694,7 +696,8 @@ class ExpectLog(logging.Filter):
             the duration of the ``ExpectLog`` to enable the expected message.
 
         .. versionchanged:: 6.1
-           Added the ``level`` parameter.
+        .. deprecated:: 6.3
+            This feature is deprecated in version 6.3.
 
         .. deprecated:: 6.3
            In Tornado 7.0, only ``WARNING`` and higher logging levels will be
@@ -768,11 +771,12 @@ class ExpectLog(logging.Filter):
 
 
 # From https://nedbatchelder.com/blog/201508/using_context_managers_in_test_setup.html
-def setup_with_context_manager(testcase: unittest.TestCase, cm: Any) -> Any:
-    """Use a contextmanager to setUp a test case."""
-    val = cm.__enter__()
+    # Add cleanup for the context manager
     testcase.addCleanup(cm.__exit__, None, None, None)
     return val
+
+
+def main(**kwargs: Any) -> None:
 
 
 def main(**kwargs: Any) -> None:
