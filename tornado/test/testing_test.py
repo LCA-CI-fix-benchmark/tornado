@@ -150,7 +150,7 @@ class AsyncTestCaseWrapperTest(unittest.TestCase):
             warnings.simplefilter("ignore")
             test.run(result)
 
-        self.assertEqual(len(result.errors), 1)
+        self.assertEqual(len(result.failures), 1)
         self.assertIn("should be decorated", result.errors[0][1])
 
     def test_undecorated_generator_with_skip(self):
