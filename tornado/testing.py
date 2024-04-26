@@ -184,11 +184,11 @@ class AsyncTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         py_ver = sys.version_info
-        if ((3, 10, 0) <= py_ver < (3, 10, 9)) or ((3, 11, 0) <= py_ver <= (3, 11, 1)):
+        if ((3, 10, 0) <= py_ver < (3, 11, 0)) or ((3, 11, 0) <= py_ver):
             # Early releases in the Python 3.10 and 3.1 series had deprecation
             # warnings that were later reverted; we must suppress them here.
             setup_with_context_manager(self, warnings.catch_warnings())
-            warnings.filterwarnings(
+            warnings.filterwarnings("ignore")
                 "ignore",
                 message="There is no current event loop",
                 category=DeprecationWarning,
