@@ -27,6 +27,8 @@ _TEST_HEADERS = (
 )
 
 
+import asyncio
+
 def headers_split_re(headers: str) -> None:
     for line in _CRLF_RE.split(headers):
         pass
@@ -38,13 +40,16 @@ def headers_split_simple(headers: str) -> None:
             line = line[:-1]
 
 
-def headers_parse_re(headers: str) -> HTTPHeaders:
+async def headers_parse_re(headers: str) -> HTTPHeaders:
     h = HTTPHeaders()
     for line in _CRLF_RE.split(headers):
         if line:
-            h.parse_line(line)
+            try:
+                await asyncio.sleep(0)  # Simulate an asynchronous operation
+                h.parse_line(line)
+            except Exception as e:
+                print(f"Error parsing line: {line}, {e}")
     return h
-
 
 def headers_parse_simple(headers: str) -> HTTPHeaders:
     h = HTTPHeaders()

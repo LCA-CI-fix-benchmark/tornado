@@ -79,8 +79,7 @@ def _atexit_callback() -> None:
             # deadlock happens every time in CI (both travis and appveyor) but
             # I've never been able to reproduce locally.
             loop._thread.join()
-    _selector_loops.clear()
-
+_selector_loops.clear()
 
 atexit.register(_atexit_callback)
 

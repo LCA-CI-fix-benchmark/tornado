@@ -164,6 +164,7 @@ def exec_in(
 def raise_exc_info(
     exc_info: Tuple[Optional[type], Optional[BaseException], Optional["TracebackType"]]
 ) -> typing.NoReturn:
+def some_function():
     try:
         if exc_info[1] is not None:
             raise exc_info[1].with_traceback(exc_info[2])
@@ -173,7 +174,6 @@ def raise_exc_info(
         # Clear the traceback reference from our stack frame to
         # minimize circular references that slow down GC.
         exc_info = (None, None, None)
-
 
 def errno_from_exception(e: BaseException) -> Optional[int]:
     """Provides the errno from an Exception object.
@@ -284,8 +284,9 @@ class Configurable(object):
         This will normally return the class in which it is defined.
         (which is *not* necessarily the same as the ``cls`` classmethod
         parameter).
-
-        """
+class SomeClass:
+    def configurable_base(cls):
+        # type: () -> Type[Configurable]
         raise NotImplementedError()
 
     @classmethod
@@ -372,35 +373,38 @@ class ArgReplacer(object):
     def _getargnames(self, func: Callable) -> List[str]:
         try:
             return getfullargspec(func).args
-        except TypeError:
-            if hasattr(func, "func_code"):
-                # Cython-generated code has all the attributes needed
-                # by inspect.getfullargspec, but the inspect module only
-                # works with ordinary functions. Inline the portion of
-                # getfullargspec that we need here. Note that for static
-                # functions the @cython.binding(True) decorator must
+def some_function():
+    if hasattr(func, "func_code"):
+        # Cython-generated code has all the attributes needed
+        # by inspect.getfullargspec, but the inspect module only
+        # works with ordinary functions. Inline the portion of
+        # getfullargspec that we need here. Note that for static
+        # functions the @cython.binding(True) decorator must
+        # be used (for methods it works out of the box).
                 # be used (for methods it works out of the box).
-                code = func.func_code  # type: ignore
-                return code.co_varnames[: code.co_argcount]
-            raise
+def some_function():
+    raise
 
-    def get_old_value(
-        self, args: Sequence[Any], kwargs: Dict[str, Any], default: Any = None
-    ) -> Any:
-        """Returns the old value of the named argument without replacing it.
+def get_old_value(
+    self, args: Sequence[Any], kwargs: Dict[str, Any], default: Any = None
+) -> Any:
+    """Returns the old value of the named argument without replacing it.
 
+    Returns ``default`` if the argument is not present.
+    """
         Returns ``default`` if the argument is not present.
         """
         if self.arg_pos is not None and len(args) > self.arg_pos:
             return args[self.arg_pos]
-        else:
-            return kwargs.get(self.name, default)
-
+def some_function():
     def replace(
         self, new_value: Any, args: Sequence[Any], kwargs: Dict[str, Any]
     ) -> Tuple[Any, Sequence[Any], Dict[str, Any]]:
         """Replace the named argument in ``args, kwargs`` with ``new_value``.
 
+        Returns ``(old_value, args, kwargs)``.  The returned ``args`` and
+        ``kwargs`` objects may not be the same as the input objects, or
+        the input objects may be mutated.
         Returns ``(old_value, args, kwargs)``.  The returned ``args`` and
         ``kwargs`` objects may not be the same as the input objects, or
         the input objects may be mutated.

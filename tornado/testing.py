@@ -852,15 +852,13 @@ def main(**kwargs: Any) -> None:
     if options.buffer is not None:
         kwargs["buffer"] = True
 
-    if __name__ == "__main__" and len(argv) == 1:
-        print("No tests specified", file=sys.stderr)
-        sys.exit(1)
-    # In order to be able to run tests by their fully-qualified name
-    # on the command line without importing all tests here,
-    # module must be set to None.  Python 3.2's unittest.main ignores
-    # defaultTest if no module is given (it tries to do its own
-    # test discovery, which is incompatible with auto2to3), so don't
-    # set module if we're not asking for a specific test.
+import sys
+import unittest
+from sys import argv
+
+if __name__ == "__main__" and len(argv) == 1:
+    print("No tests specified", file=sys.stderr)
+    sys.exit(1)
     if len(argv) > 1:
         unittest.main(module=None, argv=argv, **kwargs)  # type: ignore
     else:
