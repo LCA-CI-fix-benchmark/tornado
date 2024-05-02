@@ -358,7 +358,7 @@ class BaseIOStream(object):
         except:
             # Ensure that the future doesn't log an error because its
             # failure was never examined.
-            future.add_done_callback(lambda f: f.exception())
+            future.add_done_callback(lambda f: f.exception() if f.exception() is not None else None)
             raise
         return future
 

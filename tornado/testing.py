@@ -185,8 +185,7 @@ class AsyncTestCase(unittest.TestCase):
     def setUp(self) -> None:
         py_ver = sys.version_info
         if ((3, 10, 0) <= py_ver < (3, 10, 9)) or ((3, 11, 0) <= py_ver <= (3, 11, 1)):
-            # Early releases in the Python 3.10 and 3.1 series had deprecation
-            # warnings that were later reverted; we must suppress them here.
+            # Suppress deprecation warnings in early releases of Python 3.10 and 3.11.
             setup_with_context_manager(self, warnings.catch_warnings())
             warnings.filterwarnings(
                 "ignore",
