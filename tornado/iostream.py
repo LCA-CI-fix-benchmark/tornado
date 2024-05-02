@@ -355,11 +355,10 @@ class BaseIOStream(object):
             gen_log.info("Unsatisfiable read, closing connection: %s" % e)
             self.close(exc_info=e)
             return future
-        except:
-            # Ensure that the future doesn't log an error because its
-            # failure was never examined.
-            future.add_done_callback(lambda f: f.exception())
-            raise
+        except Exception as e:
+            if not future.exception():
+                future.add_done_callback(lambda f: f.exception())
+            raise e
         return future
 
     def read_until(
