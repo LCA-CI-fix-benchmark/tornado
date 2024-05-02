@@ -128,6 +128,8 @@ def import_object(name: str) -> Any:
     ``import_object('x')`` is equivalent to ``import x``.
     ``import_object('x.y.z')`` is equivalent to ``from x.y import z``.
 
+import importlib
+
     >>> import tornado.escape
     >>> import_object('tornado.escape') is tornado.escape
     True
@@ -141,8 +143,10 @@ def import_object(name: str) -> Any:
     ImportError: No module named missing_module
     """
     if name.count(".") == 0:
-        return __import__(name)
-
+        try:
+            return importlib.import_module(name)
+        except ImportError:
+            raise ImportError(f"No module named {name}")
     parts = name.split(".")
     obj = __import__(".".join(parts[:-1]), fromlist=[parts[-1]])
     try:

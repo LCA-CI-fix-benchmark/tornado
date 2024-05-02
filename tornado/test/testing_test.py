@@ -148,11 +148,10 @@ class AsyncTestCaseWrapperTest(unittest.TestCase):
         # Silence "RuntimeWarning: coroutine 'test_coro' was never awaited".
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            test.run(result)
+            asyncio.run(test.run(result))
 
         self.assertEqual(len(result.errors), 1)
         self.assertIn("should be decorated", result.errors[0][1])
-
     def test_undecorated_generator_with_skip(self):
         class Test(AsyncTestCase):
             @unittest.skip("don't run this")
