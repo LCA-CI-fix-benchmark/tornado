@@ -1038,7 +1038,7 @@ class RunnerGCTest(AsyncTestCase):
         # At least one wakeup and one finally
         self.assertGreaterEqual(len(result), 2)
         if not self.is_pypy3():
-            # coroutine finalizer was called (not on PyPy3 apparently)
+            # Check if the coroutine finalizer was called (not applicable on PyPy3)
             self.assertIs(result[-1], None)
 
     def test_multi_moment(self):

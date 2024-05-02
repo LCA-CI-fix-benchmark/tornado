@@ -190,9 +190,9 @@ class AsyncTestCase(unittest.TestCase):
             setup_with_context_manager(self, warnings.catch_warnings())
             warnings.filterwarnings(
                 "ignore",
-                message="There is no current event loop",
                 category=DeprecationWarning,
-                module=r"tornado\..*",
+                message="There is no current event loop",
+                module=r"tornado\..*"
             )
         super().setUp()
         if type(self).get_new_ioloop is not AsyncTestCase.get_new_ioloop:

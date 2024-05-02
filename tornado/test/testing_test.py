@@ -145,12 +145,12 @@ class AsyncTestCaseWrapperTest(unittest.TestCase):
         test = Test("test_coro")
         result = unittest.TestResult()
 
-        # Silence "RuntimeWarning: coroutine 'test_coro' was never awaited".
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
             test.run(result)
 
-        self.assertEqual(len(result.errors), 1)
+        # Check for RuntimeWarning about coroutine not being awaited
+        self.assertEqual(len([warning for warning in w if issubclass(warning.category, RuntimeWarning)]), 1)
         self.assertIn("should be decorated", result.errors[0][1])
 
     def test_undecorated_generator_with_skip(self):
