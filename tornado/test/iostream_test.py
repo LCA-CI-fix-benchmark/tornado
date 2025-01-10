@@ -52,6 +52,7 @@ def _server_ssl_options():
 
 
 class HelloHandler(RequestHandler):
+    MAX_RETRIES = 3
     def get(self):
         self.write("Hello")
 
@@ -59,6 +60,23 @@ class HelloHandler(RequestHandler):
 class TestIOStreamWebMixin(object):
     def _make_client_iostream(self):
         raise NotImplementedError()
+
+    @gen_test
+    def test_input_validation_and_retry(self):
+        stream = self._make_client_iostream()
+        yield stream.connect(("127.0.0.1", self.get_http_port()))
+
+        for i in range(HelloHandler.MAX_RETRIES + 1):
+            try:
+                inp = input("Enter two numbers: ")
+                x, y = map(float, inp.split())
+                result = self.process_calculation(divide, x, y)
+                print(f"Result: {result}")
+                break
+            except (ValueError, TypeError):
+                print(f"Error: Invalid input. Retry {i+1}/{HelloHandler.MAX_RETRIES}.")
+        else:
+            print(f"Failed after {HelloHandler.MAX_RETRIES} attempts")
 
     def get_app(self):
         return Application([("/", HelloHandler)])
