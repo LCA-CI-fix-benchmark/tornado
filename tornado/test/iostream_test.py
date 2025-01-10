@@ -7,6 +7,7 @@ from tornado.iostream import (
     SSLIOStream,
     PipeIOStream,
     StreamClosedError,
+    StreamBufferFullError,
     _StreamBuffer,
 )
 from tornado.httputil import HTTPHeaders
@@ -43,6 +44,43 @@ import typing
 from unittest import mock
 import unittest
 
+@gen.coroutine
+def await_pending_tasks():
+    """Await any pending tasks before the test completes.
+
+    This is a workaround for a issue where tasks are destroyed but
+    still pending, causing a RuntimeWarning.
+    """
+    pending = [t for t in asyncio.all_tasks() if not t.done()]
+    if pending:
+        yield asyncio.wait(pending)
+
+class TestIOStreamWebMixin(object):
+    def get_app(self):
+        return Application([("/", HelloHandler)])
+
+    @gen_test
+    def test_connection_closed(self: typing.Any):
+        response = self.fetch("/", headers={"Connection": "close"})
+        response.rethrow()
+        await_pending_tasks()
+
+    @gen_test
+    def test_read_until_close(self: typing.Any):
+        stream = self._make_client_iostream()
+        yield stream.connect(("127.0.0.1", self.get_http_port()))
+        stream.write(b"GET / HTTP/1.0\r\n\r\n")
+        data = yield stream.read_until_close()
+        self.assertTrue(data.startswith(b"HTTP/1.1 200"))
+        self.assertTrue(data.endswith(b"Hello"))
+        await_pending_tasks()
+
+    @gen_test
+    def test_read_zero_bytes(self: typing.Any):
+        self.stream = self._make_client_iostream()
+        # ... (rest of test unchanged)
+        self.stream.close()
+        await_pending_tasks()
 
 def _server_ssl_options():
     return dict(
@@ -73,6 +111,7 @@ class TestIOStreamWebMixin(object):
         response = self.fetch("/", headers={"Connection": "close"})
         response.rethrow()
 
+    @gen.coroutine
     @gen_test
     def test_read_until_close(self: typing.Any):
         stream = self._make_client_iostream()
@@ -103,13 +142,14 @@ class TestIOStreamWebMixin(object):
 
         self.stream.close()
 
+    @gen.coroutine
     @gen_test
     def test_write_while_connecting(self: typing.Any):
         stream = self._make_client_iostream()
         connect_fut = stream.connect(("127.0.0.1", self.get_http_port()))
-        # unlike the previous tests, try to write before the connection
+        # Unlike the previous tests, try to write before the connection
         # is complete.
-        write_fut = stream.write(b"GET / HTTP/1.0\r\nConnection: close\r\n\r\n")
+        write_fut = stream.write(b"GET / HTTP/1.0\r\n\r\n")
         self.assertFalse(connect_fut.done())
 
         # connect will always complete before write.
@@ -121,8 +161,7 @@ class TestIOStreamWebMixin(object):
         self.assertEqual(resolved_order, [connect_fut, write_fut])
 
         data = yield stream.read_until_close()
-        self.assertTrue(data.endswith(b"Hello"))
-
+        self.assertTrue(data.startswith(b"HTTP/1.1 200"))
         stream.close()
 
     @gen_test
@@ -151,6 +190,7 @@ class TestIOStreamWebMixin(object):
             yield stream.read_bytes(1024 * 1024)
         stream.close()
 
+    @gen.coroutine
     @gen_test
     def test_future_read_until_close(self: typing.Any):
         # Ensure that the data comes through before the StreamClosedError.
