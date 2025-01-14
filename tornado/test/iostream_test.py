@@ -1197,7 +1197,7 @@ class TestIOStreamCheckHostname(AsyncTestCase):
     @gen_test
     async def test_no_match(self):
         stream = SSLIOStream(socket.socket(), ssl_options=self.client_ssl_ctx)
-        with ExpectLog(gen_log, ".*alert bad certificate", level=logging.WARNING):
+        with ExpectLog(gen_log, "SSL Error on 127.0.0.1: certificate verify failed \\(self signed certificate\\)", level=logging.WARNING):
             with self.assertRaises(ssl.SSLCertVerificationError):
                 with ExpectLog(
                     gen_log,
