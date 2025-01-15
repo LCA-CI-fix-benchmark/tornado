@@ -302,13 +302,14 @@ class TestReadWriteMixin(object):
         # existed it would fail if the second chunk were smaller than
         # the first. This is due to the optimization that the
         # read_until condition is only checked when the buffer doubles
-        # in size
+        # in size        # Allow the close to propagate to the `rs` side of the
+        # connection without a timeout.
         async with self.iostream_pair() as (rs, ws):
             rf = asyncio.ensure_future(rs.read_until(b"done"))
             # We need to wait for the read_until to actually start. On
             # windows that's tricky because the selector runs in
             # another thread; sleeping is the simplest way.
-            await asyncio.sleep(0.1)
+            yield self.io_loop.run_sync(lambda: gen.sleep(0.1))
             await ws.write(b"x" * 2048)
             ws.write(b"done")
             ws.close()
@@ -323,7 +324,7 @@ class TestReadWriteMixin(object):
         async with self.iostream_pair() as (rs, ws):
             rf = asyncio.ensure_future(rs.read_until(b"done"))
             await ws.write(b"x" * 2048)
-            ws.write(b"foo")
+            ws.write(b"foox")
             ws.close()
             with self.assertRaises(StreamClosedError):
                 await rf
