@@ -12,6 +12,7 @@ from tornado.iostream import (
 from tornado.httputil import HTTPHeaders
 from tornado.locks import Condition, Event
 from tornado.log import gen_log
+from unittest.mock import patch
 from tornado.netutil import ssl_options_to_context, ssl_wrap_socket
 from tornado.platform.asyncio import AddThreadSelectorEventLoop
 from tornado.tcpserver import TCPServer
