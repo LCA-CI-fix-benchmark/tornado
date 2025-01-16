@@ -743,6 +743,7 @@ class TestIOStreamMixin(TestReadWriteMixin):
         client_stream = self._make_client_iostream(socket.socket(), **kwargs)
         connect_fut = client_stream.connect(("127.0.0.1", port))
         server_stream, client_stream = yield [server_stream_fut, connect_fut]
+        yield gen.sleep(0.1)
         self.io_loop.remove_handler(listener.fileno())
         listener.close()
         raise gen.Return((server_stream, client_stream))
