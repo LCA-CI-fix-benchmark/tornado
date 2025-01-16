@@ -59,6 +59,14 @@ class HelloHandler(RequestHandler):
 class TestIOStreamWebMixin(object):
     def _make_client_iostream(self):
         raise NotImplementedError()
+        
+    def _check_ssl_certificate(self):
+        # SSL certificate validation callback
+        def verify_cb(conn, cert, errno, depth, result):
+            if result != 1:
+                gen_log.warning("alert bad certificate: hostname mismatch")
+            return result
+        return verify_cb
 
     def get_app(self):
         return Application([("/", HelloHandler)])
