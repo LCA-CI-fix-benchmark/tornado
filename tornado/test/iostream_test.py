@@ -147,8 +147,9 @@ class TestIOStreamWebMixin(object):
         stream = self._make_client_iostream()
         yield stream.connect(("127.0.0.1", self.get_http_port()))
         yield stream.write(b"GET / HTTP/1.0\r\n\r\n")
-        with self.assertRaises(StreamClosedError):
+        with self.assertRaises(StreamClosedError) as cm:
             yield stream.read_bytes(1024 * 1024)
+        self.assertEqual(cm.exception.code, errno.ECONNRESET)
         stream.close()
 
     @gen_test
