@@ -42,6 +42,7 @@ import ssl
 import typing
 from unittest import mock
 import unittest
+import re
 
 
 def _server_ssl_options():
