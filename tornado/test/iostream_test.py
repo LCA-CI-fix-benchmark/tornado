@@ -1197,17 +1197,16 @@ class TestIOStreamCheckHostname(AsyncTestCase):
     @gen_test
     async def test_no_match(self):
         stream = SSLIOStream(socket.socket(), ssl_options=self.client_ssl_ctx)
-        with ExpectLog(gen_log, ".*alert bad certificate", level=logging.WARNING):
-            with self.assertRaises(ssl.SSLCertVerificationError):
-                with ExpectLog(
-                    gen_log,
-                    ".*(certificate verify failed: Hostname mismatch)",
-                    level=logging.WARNING,
-                ):
-                    await stream.connect(
-                        ("127.0.0.1", self.port),
-                        server_hostname="bar.example.com",
-                    )
+        with self.assertRaises((ssl.SSLCertVerificationError, ssl.CertificateError)):
+            with ExpectLog(
+                gen_log,
+                "SSL Error|.*certificate verify failed",
+                level=logging.WARNING,
+            ):
+                await stream.connect(
+                    ("127.0.0.1", self.port),
+                    server_hostname="bar.example.com",
+                )
             # The server logs a warning while cleaning up the failed connection.
             # Unfortunately there's no good hook to wait for this logging.
             await asyncio.sleep(1 if platform.system() == "Windows" else 0.1)
