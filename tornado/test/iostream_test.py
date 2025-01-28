@@ -469,7 +469,7 @@ class TestReadWriteMixin(object):
         try:
             # Even though data that matches arrives the same packet that
             # puts us over the limit, we fail the request because it was not
-            # found within the limit.
+            # found within the limit. The data that does arrive is still consumed.
             ws.write(b"abcdef")
             with ExpectLog(gen_log, "Unsatisfiable read", level=logging.INFO):
                 rs.read_until(b"def", max_bytes=5)
