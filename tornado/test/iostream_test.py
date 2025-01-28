@@ -895,7 +895,7 @@ class TestIOStreamWebHTTP(TestIOStreamWebMixin, AsyncHTTPTestCase):
 
 class TestIOStreamWebHTTPS(TestIOStreamWebMixin, AsyncHTTPSTestCase):
     def _make_client_iostream(self):
-        return SSLIOStream(socket.socket(), ssl_options=dict(cert_reqs=ssl.CERT_NONE))
+        return SSLIOStream(socket.socket(), ssl_options=dict(cert_reqs=ssl.CERT_REQUIRED))
 
 
 class TestIOStream(TestIOStreamMixin, AsyncTestCase):
