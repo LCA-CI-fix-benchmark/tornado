@@ -866,7 +866,9 @@ class TestIOStreamMixin(TestReadWriteMixin):
         m, n = 5000, 1000
         nproducers = 10
         total_bytes = m * n * nproducers
-        server, client = yield self.make_iostream_pair(max_buffer_size=total_bytes)
+        server, client = yield self.make_iostream_pair(
+            max_buffer_size=total_bytes, read_chunk_size=4096
+        )
 
         @gen.coroutine
         def produce():
